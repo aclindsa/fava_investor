@@ -4,6 +4,7 @@ from fava.ext import FavaExtensionBase
 from fava import __version__ as fava_version
 
 from .modules.tlh import libtlh
+from .modules.tgh import libtgh
 from .modules.assetalloc_class import libassetalloc
 from .modules.assetalloc_account import libaaacc
 from .modules.cashdrag import libcashdrag
@@ -54,6 +55,10 @@ class Investor(FavaExtensionBase):  # pragma: no cover
     def recently_sold_at_loss(self):
         accapi = FavaInvestorAPI()
         return libtlh.recently_sold_at_loss(accapi, self.config.get('tlh', {}))
+
+    def build_tgh_tables(self):
+        accapi = FavaInvestorAPI(self.ledger)
+        return libtgh.get_tables(accapi, self.config.get('tgh', {}))
 
     def use_new_querytable(self):
         """

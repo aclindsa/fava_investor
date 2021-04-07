@@ -8,6 +8,7 @@
                         ('aa_account', _('Asset Allocation Accounts')),
                         ('cashdrag', _('Cash Drag')),
                         ('tlh', _('Tax Loss Harvestor')),
+                        ('tgh', _('Tax Gain Harvestor')),
                         ('summarizer', _('Summarizer')),
                         ('minimizegains', _('Gains Minimizer'))
                         ] %}
@@ -149,6 +150,50 @@ module.
 
 {% endif %}
 
+{% if (module == 'tgh') %}
+  <h2>Tax Gain Harvester</h2>
+  {% set harvests = extension.build_tgh_tables() %}
+
+  <div class="row">
+    <div class="column">
+      <h3 style="text-align:left">Summary</h3>
+      <table class="sortable">
+        <thead>
+          <tr>
+            <th data-sort="string">{{ _('Summary') }}</th>
+            <th data-sort="string">{{ _('Val') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key, value in harvests[1].items() %}
+          <tr>
+            <td>{{ key }}</td>
+            <td align="right">{{ value }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <br />
+    </div>
+    <div class="column">
+      <h3 style="text-align:left">Gains by Commodity</h3>
+      {% if new_querytable %}
+        {{ querytable.querytable(ledger, None, *harvests[2]) }}
+      {% else %}
+        {{ querytable.querytable(None, *harvests[2]) }}
+      {% endif %}
+      <br />
+    </div>
+  </div>
+
+  <h3>Candidates for tax gain harvesting</h3>
+  {% if new_querytable %}
+    {{ querytable.querytable(ledger, None, *harvests[0]) }}
+  {% else %}
+    {{ querytable.querytable(None, *harvests[0]) }}
+  {% endif %}
+  <br />
+{% endif %}
 
 {% if (module == 'minimizegains') %}
   <h2>Minimize Gains</h2>
