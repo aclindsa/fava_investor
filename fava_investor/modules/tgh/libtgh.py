@@ -61,7 +61,7 @@ def find_harvestable_lots(accapi, options):
     gain_threshold = options.get('gain_threshold', 1)
 
     # our output table is slightly different from our query table:
-    retrow_types = rtypes[:-1] + [('gain', Decimal)]
+    retrow_types = rtypes[:-1] + [('gain', Decimal), ('pct_gain', Decimal)]
     retrow_types = split_column(retrow_types, 'units')
     retrow_types = split_column(retrow_types, 'market_value', ticker_label='currency')
 
@@ -81,9 +81,10 @@ def find_harvestable_lots(accapi, options):
         if row.market_value.get_only_position() and \
                 (val(row.market_value) - val(row.basis) > gain_threshold):
             gain = D(val(row.market_value) - val(row.basis))
+            pct = D(gain * D(100.0) / val(row.basis))
 
             to_sell.append(RetRow(row.account, *split_currency(row.units), row.acquisition_date,
-                                  *split_currency(row.market_value), gain))
+                                  *split_currency(row.market_value), gain, pct))
 
     return retrow_types, to_sell
 
